@@ -24,6 +24,7 @@
 from builtins import str
 import os
 import re
+import zipfile
 
 from qgis.PyQt.QtCore import (
                               QDir,
@@ -196,11 +197,26 @@ class QConsolidateDialog(QDialog):
         # copy project file
         projectFile = QgsProject.instance().fileName()
         try:
-            if projectFile:
-                f = QFile(projectFile)
-                newProjectFile = os.path.join(outputDir,
-                                              '%s.qgs' % project_name)
-                f.copy(newProjectFile)
+            if os.path.isfile(projectFile):
+                if projectFile.endswith('.qgs'):
+                    f = QFile(projectFile)
+                    newProjectFile = os.path.join(outputDir, '%s.qgs' % project_name)
+                    f.copy(newProjectFile)
+                    
+                elif projectFile.endswith('.qgz'):
+                    # extract qgz file to output directory and rename the old project file to the new project name
+                    with zipfile.ZipFile(projectFile) as zip:
+                        fileList = zip.namelist()
+                        oldProjFilename = next(x for x in fileList if x.endswith('.qgs'))
+                        zip.extractall(outputDir)
+                        oldProjectFile = os.path.join(outputDir, oldProjFilename)
+                        newProjectFile = os.path.join(outputDir, outputDir, '%s.qgs' % project_name)
+                        if oldProjectFile != newProjectFile:
+                            os.rename(oldProjectFile, newProjectFile)
+                    
+                else:
+                    raise Exception('unknown filetype of: ' + projectFile) 
+                    
             else:
                 newProjectFile = os.path.join(
                     outputDir, '%s.qgs' % project_name)
