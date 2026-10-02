@@ -1,21 +1,40 @@
 [general]
 name=QConsolidate3
-description=QConsolidate3
-about=QConsolidate3 is a modified version of QConsolidate (https://github.com/alexbruy/qconsolidate) and OQ-Consolidate (https://github.com/gem/oq-consolidate), that copies raster layers and converts vector layers to GeoPackage or ESRI ShapeFile, creates a project if it does not exist yet, allows to give a customized (validated) name to the consolidated project, allows to store all the project files in a zip file
+description=Copies every layer in the current project into one folder (vectors to GeoPackage or Shapefile, rasters copied with their side-car files) and writes a project file that points at the copies.
+about=QConsolidate3 is a modified version of QConsolidate (Alexander Bruy) and OQ-Consolidate (GEM Foundation). Versions 0.3.0 and later were updated for QGIS 3.44 LTR by Claude, Anthropic's AI assistant (via Claude.ai), at the request of Miner-Jeff (GitHub). This fork is provided as-is and is not actively maintained; bug reports are not monitored.
 category=Plugins
-version=0.2.1
-qgisMinimumVersion=3.0
+version=0.4.0
+qgisMinimumVersion=3.30
+qgisMaximumVersion=4.99
+supportsQt6=True
 
-author=Danzig
-email=abelke@gmail.com
+author=Danzig (original); 0.3.0+ updates by Claude (Anthropic AI, via Claude.ai) at the request of Miner-Jeff (GitHub)
 
 icon=icons/qconsolidate.png
+tags=consolidate,package,project,export,geopackage
 
-tags=openquake
+homepage=https://github.com/Miner-Jeff/qconsolidate3
+repository=https://github.com/Miner-Jeff/qconsolidate3
 
-homepage=https://github.com/danzig666/qconsolidate3/
-tracker=https://github.com/danzig666/qconsolidate3/issues
-repository=https://github.com/danzig666/qconsolidate3/
+changelog=0.3.0 and 0.4.0 written by Claude (Anthropic AI, via Claude.ai) at the request of Miner-Jeff (GitHub), for QGIS 3.44 LTR.
+    0.4.0
+    - New default mode "Keep original formats": copies files as-is (with side-car files), once per file even when several layers share it
+    - Layers without a file (scratch, PostGIS, WFS...) are exported to GeoPackage in that mode
+    - Safeguard: a large file (over 100 MB) holding layers the project does not use is not copied whole; only the used layers are exported
+    - Layers with unsaved edits are exported (with the edits) instead of copied
+    - Same-named files from different folders no longer collide
+    - All paths written through QGIS's own relative-path handling
+    0.3.0
+    - Fix About dialog crash on Python 3.12 (SafeConfigParser removed)
+    - Never edit source layers (old version deleted 'fid' fields from the ORIGINAL data when exporting to GeoPackage)
+    - Read layers only on the main thread; background task writes from thread-safe feature sources
+    - Rasters: copy all side-car files (.tfw, .prj, .aux.xml, .ovr, ...), handle GeoPackage/NetCDF-style URIs
+    - Unsupported, invalid or web layers are left pointing at their source with a warning instead of aborting
+    - Joined and virtual (expression) fields are not baked into exported data
+    - Correct relative paths (clears custom project home path, updates layer tree sources)
+    - .qgz: auxiliary storage (.qgd) renamed along with the project
+    - Asks to save unsaved projects first (previously crashed on layers added since the last save)
+    - Qt6 / QGIS 4 compatible enums, no compiled PyQt5 resource file
 
-experimental=True
+experimental=False
 deprecated=False

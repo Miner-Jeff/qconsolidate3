@@ -52,10 +52,10 @@ def log_msg(message, tag='QConsolidate3', level='I', message_bar=None,
         extracted and written only in the log
     """
     levels = {
-              'I': Qgis.Info,
-              'W': Qgis.Warning,
-              'C': Qgis.Critical,
-              'S': Qgis.Success,
+              'I': Qgis.MessageLevel.Info,
+              'W': Qgis.MessageLevel.Warning,
+              'C': Qgis.MessageLevel.Critical,
+              'S': Qgis.MessageLevel.Success,
               }
     if level not in levels:
         raise ValueError('Level must be one of %s' % levels.keys())

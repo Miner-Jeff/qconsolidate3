@@ -43,16 +43,16 @@ from qgis.PyQt.QtWidgets import (
 
 
 class AboutDialog(QDialog):
-    def __init__(self):
-        QDialog.__init__(self)
+    def __init__(self, parent=None):
+        QDialog.__init__(self, parent)
         self.initGui()
 
-        self.btnHelp = self.buttonBox.button(QDialogButtonBox.Help)
+        self.btnHelp = self.buttonBox.button(QDialogButtonBox.StandardButton.Help)
 
-        self.lblLogo.setPixmap(QPixmap(":/icons/qconsolidate.png"))
+        self.lblLogo.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "icons", "qconsolidate.png")))
 
-        cfg = configparser.SafeConfigParser()
-        cfg.read(os.path.join(os.path.dirname(__file__), "metadata.txt"))
+        cfg = configparser.ConfigParser(interpolation=None)
+        cfg.read(os.path.join(os.path.dirname(__file__), "metadata.txt"), encoding="utf-8")
         version = cfg.get("general", "version")
 
         self.lblVersion.setText(self.tr("Version: %s") % (version))
@@ -63,13 +63,13 @@ class AboutDialog(QDialog):
 
         self.buttonBox.helpRequested.connect(self.openHelp)
 
-        self.btnClose = self.buttonBox.button(QDialogButtonBox.Close)
+        self.btnClose = self.buttonBox.button(QDialogButtonBox.StandardButton.Close)
         self.btnClose.clicked.connect(self.reject)
 
     def initGui(self):
         self.setWindowTitle('QConsolidate3')
         self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.Close | QDialogButtonBox.Help)
+            QDialogButtonBox.StandardButton.Close | QDialogButtonBox.StandardButton.Help)
         self.label = QLabel("QConsolidate3")
         self.label.setStyleSheet("font-weight: bold")
         self.lblLogo = QLabel()
@@ -86,8 +86,8 @@ class AboutDialog(QDialog):
         self.setLayout(self.v_layout)
 
     def openHelp(self):
-        QDesktopServices.openUrl(QUrl(
-            "https://github.com/danzig666/qconsolidate3"))
+        QDesktopServices.openUrl(QUrl.fromLocalFile(
+            os.path.join(os.path.dirname(__file__), "README.md")))
 
     def getAboutText(self):
         return self.tr(
@@ -95,13 +95,13 @@ class AboutDialog(QDialog):
             <p>Consolidates all layers from current QGIS project into
             one directory (optionally zipping the whole project in a
             single file).</p>
-            <p><strong>Developed by</strong>: Danzig </p>
-            <p>Fork of the q-consolidate plugin by Alexander Bruy</p>
-            <p>and the OQ-Consolidate plugin GEM Foundation</p>
-            <p><strong>Homepage</strong>:
-            <a href="https://github.com/danzig666/qconsolidate3/">
-            homepage</a></p>
-            <p>Please report bugs at
-            <a href="https://github.com/danzig666/qconsolidate3/issues">
-            bugtracker</a>.</p>
+            <p><strong>Original QConsolidate3</strong>: Danzig</p>
+            <p>Fork of the QConsolidate plugin by Alexander Bruy
+            and the OQ-Consolidate plugin by the GEM Foundation.</p>
+            <p><strong>Version 0.3.0 and later</strong>: updated for
+            QGIS 3.44 LTR by Claude, Anthropic's AI assistant (via
+            Claude.ai), at the request of Miner-Jeff (GitHub).</p>
+            <p>This version is provided as-is and is not actively
+            maintained. See the CHANGELOG.md file included with the
+            plugin for details of the changes.</p>
             """)
